@@ -110,6 +110,10 @@ struct thread {
 	bool t_did_reserve_buffers;	/* reserve_buffers() in effect */
 
 	/* add more here as needed */
+
+	struct thread * parent_thd;
+	struct semaphore * child_thread_join_sem;
+	struct semaphore * parent_thread_join_sem;
 };
 
 /*
@@ -171,6 +175,11 @@ void schedule(void);
  * timer interrupt.
  */
 void thread_consider_migration(void);
+
+int thread_join(struct thread *trd);
+
+/*
+ * wait for a thread to finish
 
 
 #endif /* _THREAD_H_ */

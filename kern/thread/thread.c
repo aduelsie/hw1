@@ -1218,3 +1218,42 @@ interprocessor_interrupt(void)
 	curcpu->c_ipi_pending = 0;
 	spinlock_release(&curcpu->c_ipi_lock);
 }
+
+int thread_join(struct thread *trd) 
+{
+	struct thread *parent;
+	struct thread *curtrd;
+	
+	parent = trd->parent_thd; 	// Point to the thread's parent
+	curtrd = curthread;	// Initialize to current working thread
+	
+	// If parent isn't empty
+	KASSERT(parent != NULL);
+	
+	// If thread isn't empty
+	KASSERT(trd != NULL);
+	
+	// Checking semaphore parent's availability
+	KASSERT(trd->parent_thread_join_sem-> != NULL);
+	
+	// Checking child semaphore availability
+	KASSERT(trd->child_thread_join_sem != NULL);	
+	
+	// Thread is not the current thread
+	KASSERT(trd != curtrd);	
+	
+	
+	
+	// Waiting for child thread to exit
+	P(trd->child_thread_join_sem);
+	
+	
+	// Cleaning up for next thread
+	trd->parent_thd = NULL;
+	
+	
+	// Wake up thread to complete and release child
+	V(trd->child_thread_join_sem);
+	
+	return 0;
+}
